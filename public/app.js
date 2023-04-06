@@ -53,7 +53,7 @@ window.addEventListener('focus', () => {
     const channel = new MessageChannel();
     channel.port1.onmessage = e => {
       console.log('broser', e.data);
-//       alert(e.data);
+      document.querySelector('h2').textContent = String(e.data) + new Date();
     };
 
     if (registration.installing == null) {
