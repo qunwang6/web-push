@@ -5,15 +5,16 @@ self.addEventListener('push', evt => {
   const options = {
     body: data.body,
     // icon: 'icon.jpg',
+    data: {
+      act: data.data.act,
+    },
   };
 
   evt.waitUntil(self.registration.showNotification(title, options));
-
-  console.log(data);
-  console.log(2);
 });
 self.addEventListener('notificationclick', evt => {
   evt.notification.close();
+  clients.openWindow(evt.notification.data.act);
 });
 
 self.addEventListener('install', function (event) {
