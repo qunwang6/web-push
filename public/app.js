@@ -12,11 +12,20 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+window.addEventListener('blur', () => {
+  document.getElementById('display').textContent = 'blur';
+});
+
+window.addEventListener('focus', () => {
+  document.getElementById('display').textContent = 'focus';
+});
+
 (async () => {
   if ('serviceWorker' in navigator) {
     const registration = await navigator.serviceWorker.register('./sw.js', {
       updateViaCache: 'none',
     });
+
     await registration.update();
 
     let subscription = {};
@@ -40,5 +49,45 @@ function urlBase64ToUint8Array(base64String) {
         .then(function () {
           alert('copy finish');
         });
+
+    const channel = new MessageChannel();
+    channel.port1.onmessage = e => {
+      console.log('broser', e.data);
+    };
+
+    if (registration.installing == null) {
+      registration.active.postMessage('init', [channel.port2]);
+    } else {
+      registration.installing.onstatechange = e => {
+        if (e.target.state === 'activated') {
+          try {
+            navigator.serviceWorker.controller.postMessage('init', [
+              channel.port2,
+            ]);
+          } catch (error) {
+            registration.active.postMessage('init', [channel.port2]);
+          }
+        }
+      };
+    }
+
+    const window_timer = () => {
+      try {
+        const _channel = new MessageChannel();
+        registration.active.postMessage(
+          document.getElementById('display').textContent === 'focus'
+            ? true
+            : false,
+          [_channel.port2]
+        );
+      } catch (error) {
+      } finally {
+        setTimeout(() => {
+          window_timer();
+        }, 250);
+      }
+    };
+
+    window_timer();
   }
 })();
