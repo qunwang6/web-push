@@ -52,7 +52,8 @@ window.addEventListener('focus', () => {
 
     const channel = new MessageChannel();
     channel.port1.onmessage = e => {
-      console.log('broser', e.data);
+//       console.log('broser', e.data);
+      alert(e.data);
     };
 
     if (registration.installing == null) {
