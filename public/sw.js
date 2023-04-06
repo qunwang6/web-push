@@ -13,8 +13,10 @@ self.addEventListener('push', evt => {
     },
   };
 
-  // console.log(port, 1);
-  port.postMessage(display);
+  try {
+    // console.log(port, 1);
+    port.postMessage(display);
+  } catch (error) {}
 
   // self.registration.showNotification(title, options);
   evt.waitUntil(self.registration.showNotification(title, options));
